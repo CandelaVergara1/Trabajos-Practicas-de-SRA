@@ -1,0 +1,725 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[spanish]{babel} 
+\usepackage{graphicx, xcolor}
+\usepackage[top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\setlength{\parindent}{0pt}          % Elimina la sangría 
+\usepackage{amsmath}
+\usepackage{cancel}
+\usepackage{float}
+
+\begin{document}
+
+\begin{titlepage}
+    \newgeometry{left=2.5cm,top=1cm,bottom=2.5cm,right=2.5cm}
+    \centering
+    \includegraphics[width=1\linewidth]{logounc.jpg}
+
+    \vspace{1.5cm} 
+    
+    % --- Título 
+    {\huge \bfseries TRABAJO PRACTICO N° 3}\\[0.5cm]
+    {\Large \textsc{Dise\~no de Amplificadores con tecnologias 
+    \\[0.2cm] VFA y CFA}}\\[2cm]
+    
+    % --- Cátedra ---
+    {\large \textbf{Cátedra:} Sintesis de Redes Activas}\\[0.3cm]
+    {\large \begin{tabular}{ll}
+        \textbf{Profesores:} & Ing. FERREYRA, Pablo \\
+                             & Ing. REALE, César
+    \end{tabular}}\\[3cm]
+
+ % --- Integrantes ---
+    {\large \textbf{Integrantes:}} \\
+    \vspace{0.3cm}
+    {\large
+    \begin{tabular}{c}
+        PUCHETA NOGUERA, Juana \\
+        TONINI, Ciro Facundo \\
+        VERGARA, Candela Abigail
+    \end{tabular}}
+
+    \vfill % Empuja el siguiente texto al fondo de la página
+    {\large Córdoba, 2026}
+  
+\restoregeometry 
+
+\end{titlepage}
+
+\newpage
+\tableofcontents 
+
+
+\newpage
+\section{Introducción}
+\hspace{1mm}
+En el presente trabajo se diseñarán y analizarán amplificadores compuestos utilizando tecnologías VFA y CFA.
+
+Trabajaremos en tres instancias: en primer lugar, un amplificador VFA–VFA; luego, una configuración VFA–CFA; y finalmente, la incorporación de una red de compensación al último diseño para mejorar su desempeño dinámico.
+
+En cada caso se realizará el desarrollo teórico correspondiente y su verificación mediante simulaciones, analizando el comportamiento del circuito en términos de estabilidad y respuesta en frecuencia. 
+
+\section{Objetivos}
+\vspace{0,2cm}
+\begin{itemize}
+	\item Diseñar amplificadores utilizando tecnologías VFA (Amplificador Realimentado por Tensión) y CFA (Amplificador Realimentado por Corriente) aplicando conceptos de compensación.
+	\item Fortalecer el uso del simulador LTspice.
+	\item Comparar los errores relativos que existen entre el modelo teórico calculado y las simulaciones.
+	
+\end{itemize}
+
+\newpage
+\section{Desarrollo}
+La figura 1 muestra un amplificador compuesto que deberá ser diseñado para obtener una
+ganancia global Avf = 20dB, compensándolo para obtener una máxima planicidad de módulo
+($M\varphi =65^\circ$ o Qp = 0, 707).
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.5\linewidth]{figura1.png}
+    \caption{Esquema del amplificador compuesto}
+    \label{fig:enter-label}
+\end{figure}
+
+
+\subsection{Amplificador VFA - VFA}
+Las especificaciones del modelo de amplificador (LM324) que usaremos para la implementación del diseño son las siguientes: 
+\begin{itemize}
+    \item $A_{d0} = 100 \text{ dB}$
+    \item $f_T = 1 \text{ MHz}$
+    \item $f_1 = 10 \text{ Hz}$
+    \item $f_2 = 5.06 \text{ MHz}$
+\end{itemize}
+
+Consideraremos el AO2 como ideal, calculando la ganancia de lazo abierto $A_d(s)$, la ganancia de lazo $T(s)$ y la ganancia de lazo cerrado $A_{vf}(s)$. Cortamos el lazo y abrimos lo más cerca posible de la salida para realizar el análisis.
+
+\begin{figure}[h]
+    \centering
+   \includegraphics[width=0.5\linewidth]{figura2.png}
+    \caption{Esquema del amplificador compuesto a lazo abierto}
+    \label{fig:enter-label}
+\end{figure}
+
+\newpage
+\subsubsection{Ganancia de Lazo Abierto}
+La misma se define como la relación entre la tensión de salida y la tensión de entrada. Queda planteada como: 
+
+\begin{equation}
+    Av(s) = \frac{V_{out}}{V_{in}}|_{V_{o'}=0}  
+\end{equation}
+
+Por un lado se tiene:
+
+\begin{equation}
+    V_{o1} = Ad(s)\cdot V_{in} 
+\end{equation}
+\vspace{0,2cm}
+Además
+
+\begin{equation}
+    V_{o} = \left(1+\frac{R_2}{R_1}\right) \cdot V_{o1} 
+    \end{equation}
+
+\vspace{0.3cm}
+\begin{equation}    
+    V_{o} = \left(1+\frac{R_2}{R_1}\right) \cdot Ad(s) \cdot V_{in}
+\end{equation}
+
+\vspace{0,2cm}
+Por lo tanto
+
+\begin{equation}
+\boxed{Av(s) = \left(1+\frac{R_2}{R_1}\right) \cdot Ad(s)}
+\end{equation}
+\vspace{0.2cm}
+\subsubsection {Ganancia de Lazo T}
+\vspace{0,1cm}
+
+\begin{equation}
+    T(s) = \frac{V_{out}}{V_{o'}}|_{V_{in}=0}
+    \end{equation}
+    
+\begin{equation}
+    T(s) = \left(1+\frac{R_2}{R_1}\right) \cdot (-Ad(s)) \cdot \left(\frac{R_i}{R_i+R_f}\right)
+\end{equation}
+
+\vspace{0,2cm}
+\hspace{1mm}Entonces:
+\begin{equation}
+ \boxed{T(s) = -Ad(s) \cdot \left(1+\frac{R_2}{R_1}\right) \cdot \left(\frac{R_i}{R_i+R_f}\right)}
+\end{equation}
+
+\vspace{0.2cm}
+\subsubsection {Ganancia de Lazo Cerrado}
+\hspace{1mm}Se define como:
+\vspace{0,2cm}
+\begin{equation}
+    Avf(s) = \frac{Av(s)}{1-T}
+\end{equation}
+\vspace{0,2cm}
+Reemplazando llegamos a la siguiente expresion:
+\begin{equation}
+     Avf(s) = \frac{\left(1+\frac{R_2}{R_1}\right) \cdot Ad(s)}{1+Ad(s) \cdot \left(1+\frac{R_2}{R_1}\right) \cdot \left(\frac{R_i}{R_i+R_f}\right)} \label{eq:primera} \\
+   \nonumber
+     = \frac{\left(1+\frac{R_2}{R_1}\right)}{\frac{1}{Ad(s)} + \left(1+\frac{R_2}{R_1}\right) \cdot \left(\frac{R_i}{R_i+R_f}\right)} 
+\end{equation}
+
+\newpage
+\vspace{0,2cm}
+Considerando que la ganancia $Ad(s)$ tiende a ser muy grande, podemos simplificar y queda de la siguiente manera: 
+
+\begin{equation}
+    Avf(s) = \frac{\cancel{\left(1+\frac{R_2}{R_1}\right)}}{\cancel{\left(1+\frac{R_2}{R_1}\right)} \cdot \left(\frac{R_i}{R_i+R_f}\right)} 
+\end{equation}
+\vspace{0,2cm}
+\hspace{1mm}Por lo tanto
+
+\begin{equation}
+    \boxed{Avf(s)=\frac{R_i+R_f}{R_i}}
+\end{equation}
+
+\vspace{0,2cm} 
+\hspace{1mm}Con el fin de cumplir la especificación de la consigna de que la ganancia de lazo cerrado sea $Avf(s)=20~dB$. Con este dato btenemos la relación entre los valores de las resistencias  $R_i$ y $R_f$.
+
+\begin{equation}
+    Avf(s)=20~dB \hspace{5mm}\hspace{5mm} \frac{R_i+R_f}{R_i}=20~dB = 10~veces
+\end{equation}
+
+\vspace{0,2cm}
+\hspace{1mm}Despejando la relación de resistencias,
+
+ 
+\begin{equation}
+    \frac{R_f}{R_i} = 9
+\end{equation}
+
+\vspace{0,2cm}
+Colocando valores arbitrarios de resistencias para cumplir con la relaci\'on, se llega a que:
+\vspace{-1mm}
+\begin{align}
+    R_i &= 1~\text{k}\Omega \\ 
+    R_f &= 9~\text{k}\Omega
+\end{align}
+\vspace{0,2cm}
+\hspace{1mm}Considerando el producto ancho de banda-frecuencia constante, obtenemos:
+
+\begin{equation}
+   f_g*10=100000*10Hz
+\end{equation}
+\begin{equation}
+   f_g=100KHz
+\end{equation}
+
+\vspace{0,2cm}
+\hspace{1mm}Con este valor calculado, se determin\'o la ganancia a lazo cerrado del amplificador AO2 ideal. Recordando que los valores de $Avfi$ y que $Ad_o$ son fijados a partir de los requerimientos de la consigna de este amplificador. Siendo $Avfi=20~dB$ y $Ad_o=100~dB$:
+
+
+\begin{align}
+    Avf_{2i}&=\frac{Avfi \cdot \omega_{gi}}{Ad_0 \cdot \omega_1} =\frac{10~veces \cdot 2\pi\cdot 100 ~KHz}{100~Kveces\cdot 2\pi\cdot10~Hz} \label{eq:primera} \\
+   \nonumber
+   \\
+    Avf_{2i}&=1~veces =0~dB
+\end{align}
+
+\vspace{0,2cm}
+Siendo $ \omega _1 $ la frecuencia del primer polo, especificada en frecuencia angular. Finalmente, la ganancia del amplificador compuesto resulta
+
+\begin{equation}
+    Av_{comp}=Ad0\cdot Avf_{2i}=100~dB \cdot 0~dB
+\end{equation}
+
+\newpage
+
+\begin{equation}
+    \boxed{
+    Av_{comp} = 100~dB
+    }
+\end{equation}
+\vspace{0,2cm}
+\hspace{1mm}Ahora es posible obtener el valor de las resistencias $R_1$ y $R_2$
+
+\begin{equation}
+    Avf_{2i}=0~dB \hspace{5mm}\hspace{5mm} \frac{R_1+R_2}{R_1}=0~dB = 1~veces
+\end{equation}
+\vspace{0,2cm}
+\hspace{1mm}Entonces
+
+\begin{equation}
+    R_1\gg R_2
+\end{equation}
+\vspace{0,2cm}
+Fijamos valores arbitrarios de resistencias para cumplir con la relación:
+
+\begin{equation}
+    \boxed{
+    \begin{aligned}
+        &R_1=100~K\Omega \\
+        &R_2=1~K\Omega
+    \end{aligned}
+    }
+\end{equation}
+
+\subsubsection{Simulaciones}
+Procedemos a realizar las simulaciones en software de uso libre como lo es LTSpice.
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.9\linewidth]{figura3.png}
+    \caption{Circuito simulado en LTSpice}
+\end{figure}
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.5\linewidth]{figura4.png}
+    \caption{Ganancia de tensión a lazo cerrado}
+\end{figure}
+
+\newpage
+Como bien se ve en la figura 4 la tension de entrada $V_{in} = 10 \text{ mV}$ y la tension de salida $v_{out}$= 100 \text{mV}, por lo que tenemos una ganancia de 10 veces.
+
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.8\linewidth]{figura5.png}
+    \caption{Ancho de banda y margen de fase}
+\end{figure}
+
+De la figura 5 pudimos interpretar que el ancho de banda medido a la caída de 3 dB es de 120 KHz y que el margen de fase medido a la caída de 3dB es 56°
+
+\subsubsection{Conclusion circuito 1}
+
+De las simulaciones obtenemos que los valores de ganancia del circuito y la frecuencia de corte son los siguientes:
+\begin{equation}
+    {Avf(s)=\frac{100~mV}{10~mV}}=10~veces
+\end{equation}
+\begin{equation}
+f_g=120~KHz
+\end{equation}
+\vspace{0,3cm}
+\hspace{1mm}Por lo que el error porcentual en la ganancia a lazo cerrado es de:
+
+\begin{equation}
+    E_{\%} = \frac{|10 - 9.98|}{9.98} \cdot 100 = 0.2\%
+\end{equation}
+
+\hspace{2mm}El error porcentual de la frecuencia de corte es de:
+
+\begin{equation}
+    E_{\%} = \frac{|100 \text{ KHz} - 120 \text{ KHz}|}{120 \text{ KHz}} \cdot 100 = 16\%
+\end{equation}
+
+\vspace{0,2cm}
+\hspace{1mm}En conclusion los errores obtenidos son aceptables, por lo que se valida el diseño del circuito VFA-VFA.
+
+\newpage
+
+\subsection{Amplificador VFA-CFA}
+Para el desarrollo de este caso se utilizará el mismo circuito propuesto en el apartado anterior, con la salvedad de que el AO2 será reemplazado por un amplificador de realimentación de corriente (CFA).
+
+Las especificaciones del amplificador VFA siguen siendo las mismas:
+
+\begin{itemize}
+    \item $A_{d0} = 100 \text{ dB}$
+    \item $f_T = 1 \text{ MHz}$
+    \item $f_1 = 10 \text{ Hz}$
+    \item $f_2 = 5.06 \text{ MHz}$
+\end{itemize}
+
+Por otro lado, las especificaciones del amplificador CFA (LM6181) son las siguientes:
+
+\begin{itemize}
+    \item $R_T = 2,37 \, [M\Omega]$
+    \item $C_T = 4,8 \, [pF]$
+    \item $f_{p1} = 14 \, [kHz]$
+    \item $f_{p2} = 82,3 \, [MHz]$
+\end{itemize}
+
+
+Para este análisis se considerara al VFA con el mismo comportamiento adoptado en el caso anterior. A su vez, se supone que el polo de mayor frecuencia del CFA no influye de manera significativa en la respuesta del amplificador a lazo cerrado (teniendo en cuenta que $fp_2$=82,3[MHz],es posible tomar el sistema como de un
+solo polo en la banda de interés, es decir, cerca del punto crítico $f_G$.
+\\
+En función de esto, iniciamos el diseño planteando el margen de fase para la condición de máxima planicidad de modulo a partir de la fase de T(s):
+
+\begin{equation}
+    M \varphi = 180^o - arctg \left(\frac{f_g}{f_{1VFA}}\right) - arctg \left(\frac{f_g}{f_{2VFA}}\right) - arctg \left(\frac{f_g}{f_{CFA}}\right) = 65,5^o
+\end{equation}
+
+\vspace{0.2cm}
+
+Luego, reemplazando por los valores que son dato:
+
+\vspace{0.2cm}
+
+\begin{equation}
+    65,5^o = 180^o - arctg \left(\frac{2~MHz}{10~Hz}\right) - arctg \left(\frac{2~MHz}{5,06~MHz}\right) - arctg \left(\frac{2~MHz}{f_{CFA}}\right)
+\end{equation}
+
+\vspace{0.2cm}
+
+Dado que el polo 1 del VFA está lo suficiente alejado para no influir en  sobre la respuesta en frecuencia del amplificador:
+
+\begin{equation}
+     arctg \left(\frac{2~MHz}{10~Hz}\right) = 90^o
+\end{equation}
+
+Por lo tanto:
+
+\begin{equation}
+    65,5^o = 180^o - 90^o - 21,57^o - arctg \left(\frac{2~MHz}{f_{CFA}}\right)
+\end{equation}
+
+\newpage
+
+Luego resolviendo y despejando:
+
+\begin{equation}
+    tg (2,93^o) = \frac{2~MHz}{f_{CFA}}
+\end{equation}
+
+\begin{equation}
+    f_{CFA} = \frac{2~MHz}{tg (2,93^o)}
+\end{equation}
+
+
+\begin{equation}
+     \boxed{
+        f_{CFA} = 39~MHz
+    }
+\end{equation}
+
+\vspace{0.2cm}
+
+Ya teniendo esta frecuencia, podemos proceder al cálculo de la resistencia R2 partiendo de la siguiente ecuación:
+
+\begin{equation}
+    \omega _{CFA} = \frac{1}{C_T \cdot R_2}
+\end{equation}
+
+
+\begin{equation}
+    R_2 = \frac{1}{C_T \cdot 2\pi f_{CFA}}
+\end{equation}
+
+\begin{equation}
+    R_2 = \frac{1}{2,3~pF \cdot 2\pi \cdot 39~MHz}
+\end{equation}
+
+\begin{equation}
+    \boxed{
+        R_2 = 1774~\Omega = 1.8 K~\Omega
+    }
+\end{equation}
+
+\vspace{0.2cm}
+
+Para calcular la resistencia R1 se parte del producto ganancia por ancho de banda.
+
+\begin{equation}
+    Avf \cdot f_g = Ado \cdot f_1 \cdot Avf_2
+\end{equation}
+
+\vspace{0.2cm}
+
+Donde $Av_{f2}$ es la ganancia ideal de lazo cerrado del CFA. Despejando la fórmula anterior:
+
+\begin{align}
+   \ Avf_2 &= \frac{Avf \cdot f_g}{Ado \cdot f_1} \label{eq:primera} \\
+   \nonumber
+   \\
+         Avf_2 &= \frac{10 \cdot 2~MHz}{100000 \cdot 10~Hz}
+\end{align}
+
+\begin{equation}
+    \boxed{
+    Avf_2 = 20~veces
+    }
+\end{equation}
+
+Y recordando que:
+
+\begin{equation}
+    Avf_2 = 1 + \frac{R_2}{R_1} = 20
+\end{equation}
+
+Entonces, despejamos a R1 de la ecuación anterior:
+
+\begin{align}
+   \ R_1 &= \frac{R_2}{Avf_2 - 1} \label{eq:primera} \\
+   \nonumber
+   \\ 
+    R_1&= \frac{1800~\Omega}{20 - 1}
+\end{align}
+
+\begin{equation}
+    \boxed{
+    R_1 = 94,74~\Omega=>100~\Omega
+    }
+\end{equation}
+
+\newpage
+
+\subsubsection{Simulaciones}
+En este apartado se simulo el circuito disenado con el objetivo de verificar si cumplimos con los requerimentos solicitados. El circuito empleado fue el siguiente:
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=1\linewidth]{figura8.png}
+    \caption{Circuito VFA-CFA simulado en LTSPICE}
+\end{figure}
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=1\linewidth]{figura7.png}
+    \caption{Ganancia del amplificador VFA-CFA}
+\end{figure}
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=1\linewidth]{figura9.png}
+    \caption{Diagrama de bode de de $Av_f(s)$ }
+\end{figure}
+
+En la figura 8 puede verse correctamente que se logra el valor de ganancia global requerido, además de la frecuencia de la caída de $-3 \text{ [dB]}$ del sistema en $f_p = 2.59 \text{ [MHz]}$. 
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=1\linewidth]{bodeTsCircuito2.png}
+    \caption{Diagrama de bode de T(S)}
+\end{figure}
+
+ En este grafico podemos ver el donde cursor marca el valor de $|T(s)| = 0 \text{ [dB]}$, esa es la frecuencia que corresponde al punto crítico y logra verse $f_G = 1.92 \text{ [MHz]}\approx 2~[MHz]$. También se aprecia en ese punto una fase de $\phi = 69^\circ$.
+ 
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.4\linewidth]{margendefasecircuito2.png}
+    \caption{Margen de fase del circuito VFA-CFA}
+\end{figure}
+
+\newpage
+
+\subsubsection{Conclusion Circuito 2}
+Con las simulaciones pudimos verificar que los resultados obtenidos muestran buena concordancia con los valores teóricos solicitados (ganancia de 20 dB y un ancho de banda potencial aproximado  a 2 MHz), presentando errores porcentuales bajos.
+En el diagrama de Bode de $T(s)$ se puede visualizar el cruce en $0\,\text{dB}$ en 
+$f_G = 1.92\,\text{MHz}$, valor bastante aproximado a los $2\,\text{MHz}$ requeridos. 
+El margen de fase obtenido fue de $69^\circ$, lo que confirma que el diseño presenta 
+una estabilidad adecuada.
+
+Por último, se logró que $A_{vf}$ alcance los $20\,\text{dB}$ solicitados. 
+En conjunto, los resultados fueron satisfactorios y permiten validar el diseño 
+del circuito VFA--CFA propuesto.
+
+
+\newpage
+\subsection{Amplificador VFA-CFA con red de Compensacion}
+En este diseño haremos una compensación cero-polo al mismo amplificador de la sección anterior. Marcaremos como objetivo cancelar el polo ubicado en 5.06 MHz del VFA. 
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=0.5\linewidth]{figura6.png}
+    \caption{Red de compensacion RC cero-polo}
+    \label{fig:enter-label}
+\end{figure}
+
+La red de compensacion cuenta con la siguiente función de transferencia: 
+
+\begin{equation}
+    A_c(s) = \frac{R_y}{R_x + R_y} \cdot \frac{1 + sC_x R_x}{1 + sC_x (R_x // R_y)}
+\end{equation}
+
+\vspace{0.3cm}
+
+Renombramos algunos términos de la expresión de la siguiente manera:
+
+\begin{itemize}
+    \item $k_{comp}=\frac{R_y}{R_x + R_y}$
+    \item $ \omega_{pcomp} =  \frac{1 }{1 + sC_x (R_x // R_y)}$
+    \item $\omega_{zcomp} = \frac{1 }{ C_xR_x}$
+\end{itemize}
+
+
+Por diseño, buscamos que el cero del compensador cancele el polo producido en $f_2$, entonces se tiene que:
+
+\begin{equation}
+    \omega_{zcomp} = \omega_2 = 2\pi \cdot 5.06~Mrps
+\end{equation}
+
+Por estabilidad, ubicamos el polo del compensador una octava por encima del cero calculado, por lo tanto:
+\begin{equation}
+    \omega _{pcomp} = 2\cdot\omega _{zcomp} = 2\pi \cdot 10.12~Mrps 
+\end{equation}
+
+A partir de los valores de cero y polo calculamos la ganancia del compensador:
+
+\begin{equation}
+    k_{comp} = \frac{\omega_{zcomp}}{\omega _{pcomp}} = \frac{2\pi \cdot 5.06~Mrps}{2\pi \cdot 10.12~Mrps}
+\end{equation}
+
+\begin{equation}
+    \boxed{
+    k_{comp} = 0.5 ~veces
+    }
+\end{equation}
+
+\newpage
+Retomando la definición principal de $k_{comp}$ planteamos la relación de la ganancia con las resistencias de la red. 
+
+\begin{equation}
+    k_{comp} = \frac{R_y}{R_x + R_y}  \Longrightarrow  ~ \frac{R_y}{R_x + R_y} = 0.5
+\end{equation}
+
+Despejamos la relación y obtenemos que:
+\begin{align}
+    \frac{R_y}{R_x + R_y} &= \frac{1}{2}   \\
+        2R_y &= R_x + R_y   \\
+        2 &= \frac{R_x}{R_y} + 1
+\end{align}
+\begin{equation}
+    \boxed{
+    1 = \frac{R_x}{R_y}
+    }
+\end{equation}
+
+A estas resistencias las simularemos con los siguientes valores:
+
+\begin{equation}
+    \boxed{
+    R_x = R_y = 1~k\Omega
+    }
+\end{equation}
+
+A partir de este valor de resistencias calculamos el valor del capacitor de la red para que el cero se ubique donde deseamos. 
+\begin{equation}
+    \begin{aligned}
+              \omega_{zcomp} &= \frac{1}{C_x R_x}                     \\
+        C_x &= \frac{1}{\omega_{zcomp} \cdot {R_x}}  \\
+                        C_x &= \frac{1}{2\pi \cdot 5.06~Mrps \cdot 1~k\Omega}
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+    \boxed{
+    C_x = 31~pF
+    }
+\end{equation}
+\vspace{0.3cm}
+Planteamos la función de transferencia del lazo de realimentación considerando el condensador calculado. 
+
+\vspace{0.2cm}
+
+\begin{equation}
+    \begin{aligned}
+        T(s) &= -A_d(s) \cdot A_c(s) \cdot A_{vf2} (s)\\
+            T(s) &= - \frac{k\cdot A_d(0)}{\left(1+\frac{s}{\omega_1}\right)\left(1+\frac{s}{\omega_2}\right)} \cdot k_{comp} \frac{\left(1 + \frac{s}{\omega_{zcomp}}\right)}{\left(1+\frac{s}{\omega_{pcomp}}\right)} \cdot A_{vf2}(s)
+    \end{aligned}
+\end{equation}
+\vspace{0.2cm}
+
+Nombrando los términos que la componen de la siguiente manera: 
+
+\begin{itemize}
+    \item $k:$ realimentación del VFA.
+    \item $A_d(0):$ ganancia del VFA.
+    \item $A_{vf2}:$ función de transferencia del CFA.
+    \item $ \omega_1 , \omega_2 :$ los polos del VFA.
+\end{itemize}
+
+\newpage
+Se puede ver que el valor de realimentación del VFA introduce una atenuación a la función de tranferencia del lazo, por lo tanto también es una atenuación para la ganancia del sistema. Ajustamos la ganancia a lazo cerrado de CFA teniendo en cuenta que $ k_{comp}=0.5$. 
+
+\begin{equation}
+    A_{vf2 comp} (s) = 2\cdot A_{vf2}(s)
+\end{equation}
+
+
+Esta relación garantiza que la atenuación provocada por la compensación se atenúe con la ganancia de lazo cerrado del CFA. Asegura un rendimiento equilibrado del sistema. 
+Recordando la definición de la ganancia: 
+
+\begin{equation}
+    A_{vf2} = 1 + \frac{R_2}{R_1}
+\end{equation}
+
+Reemplazando se obtiene.
+
+\begin{equation}
+    \begin{aligned}
+        A_{vf2 comp} (s) &= 2 \left( 1 + \frac{R_2}{R_1} \right)\\
+              A_{vf2 comp} (s) &= 2 \cdot 20
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+    \boxed{
+    A_{vf2 comp} (s) = 40~veces
+    }
+\end{equation}
+
+Debido a que el polo del CFA es no varía respecto al análisis del caso sin red de compensación el valor de $R_2$ seguirá siendo el mismo:
+
+\begin{equation}
+    \boxed{
+    R_2 = 1800~\Omega
+    }
+\end{equation}
+
+Fijando un valor de resistencia calculamos el valor de la otra a partir del requerimiento de ganancia compensada. 
+
+\begin{equation}
+    \begin{aligned}
+        \frac{R_2}{R_1} &= 40 - 1 \\
+     R_1 &= \frac{1800~\Omega}{39}
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+    \boxed{
+    R_1 = 46,15~\Omega=47~\Omega
+    }
+\end{equation}
+
+\newpage
+\subsubsection{Simulaciones}
+
+\begin{figure}[h] 
+    \centering
+    \includegraphics[width=1\linewidth]{figura12.png}
+    \caption{Circuito VFA-CFA con compensacion simulado en LTSpice}
+\end{figure}
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=1\linewidth]{figura11.png}
+    \caption{Diagrama de bode AVf(s)}
+\end{figure}
+
+En esta figura puede verse que se alcanza el valor de ganancia global presentado 
+en el objetivo del circuito; sin embargo, esta cae más temprano que lo 
+calculado, esta vez en $f_p = 126\,\text{kHz}$.
+
+\begin{figure}[H] 
+    \centering
+    \includegraphics[width=1\linewidth]{ts3.png}
+    \caption{Diagrama de Bode T(s)}
+\end{figure}
+
+El cursor en ocasion marca el valor de $|T(s)| = 0\,\text{dB}$ en la frecuencia que corresponde al punto crítico y se observa $f_G = 125\,\text{kHz}$. También se puede ver en ese punto una fase de $\phi = 90^\circ$.
+
+\subsubsection{Conclusion circuito 3}
+Mediante las simulaciones realizadas pudimos verificar que se cumple con el 
+requisito de la ganancia global especificada de 20 dB. Sin embargo, el margen 
+de fase obtenido no coincide con el valor objetivo de $65^\circ$, sino que 
+resulta mayor al previsto.
+
+Si bien esto implica que el sistema continúa siendo estable, dicha estabilidad 
+se logra a costa de una reducción en la rapidez de respuesta y en el ancho de 
+banda del amplificador. En efecto, la incorporación de la red de compensación 
+cero–polo, implementada sobre el amplificador compuesto VFA–CFA, introduce una 
+modificación en la dinámica del lazo que desplaza la frecuencia de cruce y 
+disminuye considerablemente el ancho de banda respecto al diseño sin compensación.
+
+Por lo tanto, aunque el circuito compensado garantiza estabilidad adecuada y 
+cumple con la ganancia requerida, se observa un compromiso entre estabilidad y 
+desempeño en frecuencia, evidenciado en la disminución del ancho de banda del sistema.
+\end{document}
+
+
+
+
